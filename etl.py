@@ -7,8 +7,8 @@ from pyspark.sql import types
 from pyspark.sql.functions import udf, to_date, dayofweek, \
     monotonically_increasing_id, year, month, dayofmonth, hour, weekofyear
 
-ALLOW_READ: bool = False
-ALLOW_WRITE: bool = False
+ALLOW_READ: bool = True  #: read from local or S3
+ALLOW_WRITE: bool = True  #: write to S3
 
 config = configparser.ConfigParser()
 
@@ -86,7 +86,7 @@ def process_song_data(
 ):
     """
     Function that process the song data and builds two parquet tables:
-        - artists/songs_table
+        - songs/songs_table
         - artists/artists_table
     These tables are uploaded to S3
 
@@ -120,7 +120,7 @@ def process_song_data(
     # write songs table to parquet files partitioned by year and artist
     if ALLOW_WRITE:
         songs_table.write.partitionBy("year", "artist_id").parquet(
-            f"{output_data}artists/songs_table.parquet"
+            f"{output_data}songs/songs_table.parquet"
         )
 
     # extract columns to create artists table
@@ -147,7 +147,7 @@ def process_log_data(
     """
     Function that process the log data and builds two parquet tables:
         - users/users_table
-        - users/time_table
+        - time/time_table
         - songplays/songplays_table
     These tables are uploaded to S3
 
@@ -248,7 +248,7 @@ def process_log_data(
     # write time table to parquet files partitioned by year and month
     if ALLOW_WRITE:
         time_table.write.partitionBy("year", "month").parquet(
-            f"{output_data}users/time_table.parquet"
+            f"{output_data}time/time_table.parquet"
         )
 
     # read in song data to use for songplays table
