@@ -261,10 +261,12 @@ def process_log_data(
 
     # extract columns from joined song and log datasets to create
     songplays_table = df.join(
-        song_df,
+        song_df.drop("year"),
         song_df.artist_name == df.artist,
         "inner"
     )[
+        "year",
+        "month",
         "start_time",
         "userId",
         "level",
