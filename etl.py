@@ -217,7 +217,7 @@ def process_log_data(
     )
 
     # extract columns to create time table
-    time_table = df.withColumn(
+    df = df.withColumn(
         "hour",
         hour("start_time")
     ).withColumn(
@@ -235,7 +235,9 @@ def process_log_data(
     ).withColumn(
         "weekday",
         dayofweek("start_time")
-    )[
+    )
+
+    time_table = df[
         "start_time",
         "hour",
         "day",
